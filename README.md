@@ -17,6 +17,8 @@ This is a simple exmaple of how to sandbox javascript code using iframes and pro
 
 # Diagram
 
+Example of the blue realm calling a function from the read realm and how it gets distorted
+
 ```mermaid
 sequenceDiagram
     participant blue as Blue Window
