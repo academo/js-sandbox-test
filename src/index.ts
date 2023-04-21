@@ -49,7 +49,7 @@ async function main() {
   logHeader("Evaluating plugin code in red window");
 
   function distortionCallback(value: unknown) {
-    console.log("distortionCallback", value);
+    // console.log("distortionCallback", value);
     return value;
   }
 
@@ -80,6 +80,11 @@ function evaluateInChildWindow({
       } catch (error) {
         // Fallback to target[property] for properties causing "Illegal invocation"
         value = target[property];
+      }
+
+      // sometimes there's no need to distort
+      if (value === null) {
+        return null;
       }
       return distortionCallback(value);
     },
