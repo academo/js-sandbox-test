@@ -5,9 +5,11 @@
   "author": "Esteban Beltran <esteban@academo.me>",
   "license": "MIT",
   "scripts": {
-    "start": "tsc-watch --noClear -p tsconfig.json"
+    "start": "tsc-watch --noClear --onSuccess \"cp -a src/static/. ./dist\" -p tsconfig.json",
+    "serve": "http-server ./dist -p 8080"
   },
-  "dependencies": {
+  "devDependencies": {
+    "http-server": "^14.1.1",
     "tsc-watch": "^6.0.0",
     "typescript": "^5.0.4"
   }

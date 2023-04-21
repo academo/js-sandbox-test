@@ -1,6 +1,7 @@
 {
-  "files": ["index.ts"],
+  "files": ["src/index.ts"],
   "compilerOptions": {
-    "lib": ["ESNext", "dom"]
+    "lib": ["ESNext", "dom"],
+    "outDir": "dist"
   }
 }
