@@ -1,3 +1,4 @@
+// Creates an iframe with a "red" context and returns its Window object
 async function createIframeContext(): Promise<Window> {
   const iframe = document.createElement("iframe");
   iframe.srcdoc = "<html><head></head><body>red body</body></html>";
@@ -10,11 +11,13 @@ async function createIframeContext(): Promise<Window> {
   });
 }
 
+// Fetches plugin code from "plugin.js" and returns it as a string
 async function fetchPluginCode(): Promise<string> {
   const response = await fetch("plugin.js");
   return response.text();
 }
 
+// Fake dependencies for the plugin code
 const fakeDeps = {
   lodash: {},
 };
@@ -24,6 +27,7 @@ interface PluginCode {
 }
 
 async function main() {
+  // Blue window (main window) and red window (iframe context)
   const blueWindow = window;
   const redWindow = await createIframeContext();
   const pluginCode = await fetchPluginCode();
@@ -32,6 +36,7 @@ async function main() {
   blueWindow["testValue"] = "Set in blue window";
   redWindow["testValue"] = "Set in red window";
 
+  // Define a custom functions and objects to be passed as an endowment
   const endowments = {
     define: (dependencies: string[], code: (deps: unknown[]) => PluginCode) => {
       const resolvedDeps = dependencies.map((dep) => {
@@ -40,7 +45,6 @@ async function main() {
         }
         throw new Error(`Dependency ${dep} not found`);
       });
-      // prints "Set in red window"
       const plugin = code(resolvedDeps);
       plugin.main();
     },
@@ -53,6 +57,7 @@ async function main() {
     return value;
   }
 
+  // Evaluate the fetched plugin code in the red window context
   evaluateInChildWindow({
     code: pluginCode,
     childWindow: redWindow,
