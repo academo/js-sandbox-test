@@ -1,7 +1,8 @@
 // Creates an iframe with a "red" context and returns its Window object
 async function createIframeContext(): Promise<Window> {
   const iframe = document.createElement("iframe");
-  iframe.srcdoc = "<html><head></head><body>red body</body></html>";
+  iframe.srcdoc = "";
+  // iframe.src = "about:blank";
   iframe.style.display = "none";
   document.body.appendChild(iframe);
   return new Promise((resolve) => {
@@ -17,9 +18,15 @@ async function fetchPluginCode(): Promise<string> {
   return response.text();
 }
 
+const testNumber = 11;
+
 // Fake dependencies for the plugin code
 const fakeDeps = {
-  lodash: {},
+  lodash: {
+    test: () => {
+      console.log("This is from the blue realm", testNumber);
+    },
+  },
 };
 
 interface PluginCode {
@@ -45,7 +52,8 @@ async function main() {
         }
         throw new Error(`Dependency ${dep} not found`);
       });
-      const plugin = code(resolvedDeps);
+      const plugin = code.apply(null, resolvedDeps);
+      // console.log("the plugin object", plugin);
       plugin.main();
     },
   };
@@ -96,13 +104,20 @@ function evaluateInChildWindow({
   };
   const childWindowProxy = new Proxy(childWindow, proxyHandler);
 
-  //@ts-ignore typescript doesn't with
-  with ({
-    ...childWindowProxy,
-    ...endowments,
-  })
-    //eval the code
-    eval(code);
+  //@ts-ignore
+  const iframeEval = childWindow.eval;
+  console.log("iframeEval", iframeEval);
+
+  Object.assign(childWindow, endowments);
+  iframeEval(code);
+
+  // //@ts-ignore typescript doesn't with
+  // with ({
+  //   ...childWindowProxy,
+  //   ...endowments,
+  // })
+  //   //eval the code
+  //   eval(code);
 }
 
 function logHeader(message: string) {
